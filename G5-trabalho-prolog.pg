@@ -3,7 +3,8 @@
  *********************************************/
 :- dynamic(bateria/1).
 :- dynamic(temperatura_motor/1).
-* continue aqui...
+:- dynamic(nivel_oleo/1).
+:- dynamic(rotacao_motor/1).
 :- dynamic(luz_check_engine/0).
 :- dynamic(luz_bateria/0).
 * continue aqui...
@@ -57,13 +58,20 @@ diagnostico(alternador_defeituoso) :-
 %    - Se temperatura do motor > 100°C e/ou check engine aceso,
 %      indicamos problema de arrefecimento.
 diagnostico(sistema_arrefecimento) :-
-* continue aqui...
+    temperatura_motor(T),
+    T > 100,
+    luz_check_engine.
+
 
 % 3.4 Diagnóstico de baixo nível de óleo
 %    - Se nível do óleo está abaixo do mínimo,
 %      sugerimos problema relacionado ao óleo.
 diagnostico(baixo_nivel_oleo) :-
-* continue aqui...
+    nivel_oleo(Nivel),
+    Nivel < 2.0,  % Considerando 2.0 como nível mínimo
+    temperatura_motor(T),
+    T > 100.  % Temperatura alta pode indicar falta de óleo
+
 
 % 3.5 Diagnóstico de vela de ignição defeituosa
 %    - Se há falha de ignição frequente, mas a bateria está boa,
@@ -185,10 +193,12 @@ limpar_estado :-
     retractall(barulho_incomum),
     retractall(rotacao_alta).
     
-:- initialization(main).
-
+%:- initialization(main).
+% Predicado para executar todos os casos de teste
 main :-
     write('=== Executando varios casos de teste ==='), nl,
     caso_teste_1_partida_inconsistente,
     caso_teste_2_superaquecimento,
-    halt.
+    caso_teste_3_motor_engasgado_altas_rotacoes,
+    caso_teste_4_ruidos_ao_acelerar,
+    write('=== Todos os casos de teste foram executados ==='), nl.
