@@ -5,9 +5,11 @@
 :- dynamic(temperatura_motor/1).
 :- dynamic(nivel_oleo/1).
 :- dynamic(rotacao_motor/1).
+:- dynamic(sensor_oxigenio/1).
 :- dynamic(luz_check_engine/0).
 :- dynamic(luz_bateria/0).
-* continue aqui...
+:- dynamic(falha_ignicao/0).
+
 
 
 /*********************************************
@@ -77,14 +79,21 @@ diagnostico(baixo_nivel_oleo) :-
 %    - Se há falha de ignição frequente, mas a bateria está boa,
 %      suspeitamos da vela de ignição.
 diagnostico(vela_ignicao_defeituosa) :-
-* continue aqui...
+  falha_ignicao,
+  bateria(V),
+  V >= 12,  % Bateria em bom estado
+  \+ luz_bateria.  % Luz da bateria não está acesa
+
 
 % 3.6 Diagnóstico de sensor de oxigênio defeituoso
 %    - Se o sensor de oxigênio marca valor fora da faixa normal
 %      e a luz de check engine pisca somente em alta rotação,
 %      pode ser o sensor de oxigênio.
 diagnostico(sensor_oxigenio_defeituoso) :-
-* continue aqui...
+    sensor_oxigenio(Valor),
+    (Valor < 0.1; Valor > 0.9),  % Faixa normal: 0.1 a 0.9
+    rotacao_alta,
+    luz_check_engine.
 
 % 3.7 Diagnóstico de problema na injeção
 %    - Se há falha em alta rotação e a leitura do sensor de
