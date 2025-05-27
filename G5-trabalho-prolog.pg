@@ -1,11 +1,12 @@
-/*********************************************
+/***********************************************
  * 1. DECLARAÇÃO DE PREDICADOS DINÂMICOS
- *********************************************/
+ ***********************************************/
 :- dynamic(bateria/1).
 :- dynamic(temperatura_motor/1).
 :- dynamic(nivel_oleo/1).
-:- dynamic(rotacao_motor/1).
+:- dynamic(rotacao_alta/0).
 :- dynamic(sensor_oxigenio/1).
+:- dynamic(barulho_incomum/0).
 :- dynamic(luz_check_engine/0).
 :- dynamic(luz_bateria/0).
 :- dynamic(falha_ignicao/0).
@@ -99,7 +100,11 @@ diagnostico(sensor_oxigenio_defeituoso) :-
 %    - Se há falha em alta rotação e a leitura do sensor de
 %      oxigênio está na faixa normal, pode ser a injeção.
 diagnostico(problema_injecao) :-
-* continue aqui...
+    rotacao_alta,
+    sensor_oxigenio(Valor),
+    Valor >= 0.1,
+    Valor =< 0.9,
+    luz_check_engine.
 
 % 3.8 Diagnóstico de ruídos no motor (problema interno ou transmissão)
 %    - Se há barulho incomum e perda de potência, mas a check engine
@@ -111,8 +116,12 @@ diagnostico(problema_interno_motor) :-
     T < 100,  % Temperatura normal
     !.
 
+% 3.9 Diagnóstico de ruídos na transmissão
+% se há barulho incomum em alta rotação e sem check engine
 diagnostico(problema_transmissao) :-
-* continue aqui...
+    barulho_incomum,
+    rotacao_alta,
+    \+ luz_check_engine.
 
 /*********************************************
  * 4. RECOMENDAÇÕES DE AÇÃO
@@ -122,7 +131,12 @@ diagnostico(problema_transmissao) :-
 recomendacao(bateria_fraca, 'Recarregar ou substituir a bateria').
 recomendacao(alternador_defeituoso, 'Verificar correia do alternador ou trocar alternador').
 recomendacao(sistema_arrefecimento, 'Checar radiador, bomba d\'água, ventoinha e fluido de arrefecimento').
-* continue aqui...
+recomendacao(baixo_nivel_oleo, 'Verificar nível de óleo e reparar possível vazamento').
+recomendacao(vela_ignicao_defeituosa, 'Limpar ou substituir vela de ignição').
+recomendacao(sensor_oxigenio_defeituoso, 'Limpar ou substituir sensor de oxigênio').
+recomendacao(problema_injecao, 'Verificar injetores e sistema de ignição').
+recomendacao(problema_transmissao, 'Inspecionar embreagem, caixa de câmbio e eixos').
+recomendacao(problema_interno_motor, 'Levar a oficina para diagnóstico mecânico interno').
 
 /*********************************************
  * 5. PREDICADO PRINCIPAL DE DIAGNÓSTICO
