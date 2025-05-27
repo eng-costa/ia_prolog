@@ -219,9 +219,21 @@ limpar_estado :-
 %:- initialization(main).
 % Predicado para executar todos os casos de teste
 main :-
-    write('=== Executando varios casos de teste ==='), nl,
-    caso_teste_1_partida_inconsistente,
-    caso_teste_2_superaquecimento,
-    caso_teste_3_motor_engasgado_altas_rotacoes,
-    caso_teste_4_ruidos_ao_acelerar,
-    write('=== Todos os casos de teste foram executados ==='), nl.
+    repeat,
+    write('Escolha um caso de teste para executar:'), nl,
+    write('1 - Partida Inconsistente'), nl,
+    write('2 - Superaquecimento no Motor'), nl,
+    write('3 - Motor Engasgado em Altas Rotacoes'), nl,
+    write('4 - Ruidos no Motor ao Acelerar'), nl,
+    write('0 - Sair'), nl,
+    read(Op),
+    executar_opcao(Op),
+    Op =:= 0, !.
+
+executar_opcao(1) :- caso_teste_1_partida_inconsistente, !.
+executar_opcao(2) :- caso_teste_2_superaquecimento, !.
+executar_opcao(3) :- caso_teste_3_motor_engasgado_altas_rotacoes, !.
+executar_opcao(4) :- caso_teste_4_ruidos_ao_acelerar, !.
+executar_opcao(0) :- write('Saindo...'), nl, !.
+executar_opcao(_) :-
+    write('Opcao invalida, tente novamente.'), nl.
