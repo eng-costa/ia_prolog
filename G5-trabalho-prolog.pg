@@ -6,6 +6,7 @@
 :- dynamic(nivel_oleo/1).
 :- dynamic(rotacao_motor/1).
 :- dynamic(sensor_oxigenio/1).
+:- dynamic(barulho_incomum/0).
 :- dynamic(luz_check_engine/0).
 :- dynamic(luz_bateria/0).
 :- dynamic(falha_ignicao/0).
@@ -99,7 +100,11 @@ diagnostico(sensor_oxigenio_defeituoso) :-
 %    - Se há falha em alta rotação e a leitura do sensor de
 %      oxigênio está na faixa normal, pode ser a injeção.
 diagnostico(problema_injecao) :-
-* continue aqui...
+    rotacao_alta,
+    sensor_oxigenio(Valor),
+    Valor >= 0.1,
+    Valor =< 0.9,
+    luz_check_engine.
 
 % 3.8 Diagnóstico de ruídos no motor (problema interno ou transmissão)
 %    - Se há barulho incomum e perda de potência, mas a check engine
@@ -111,8 +116,12 @@ diagnostico(problema_interno_motor) :-
     T < 100,  % Temperatura normal
     !.
 
+% 3.9 Diagnóstico de ruídos na transmissão
+% se há barulho incomum em alta rotação e sem check engine
 diagnostico(problema_transmissao) :-
-* continue aqui...
+    barulho_incomum,
+    rotacao_motor,
+    \+ luz_check_engine.
 
 /*********************************************
  * 4. RECOMENDAÇÕES DE AÇÃO
